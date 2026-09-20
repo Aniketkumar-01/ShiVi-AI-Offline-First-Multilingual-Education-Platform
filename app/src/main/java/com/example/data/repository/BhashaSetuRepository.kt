@@ -21,7 +21,10 @@ import com.example.domain.model.WorksheetQuestion
 import com.example.domain.model.toJsonString
 import com.example.domain.model.parseWorksheetQuestionsJson
 import com.example.domain.rag.LocalRagEmbeddingEngine
-import com.example.domain.voice.OfflineVoiceTranslationEngine
+import com.example.ai.ModelManagerImpl
+import com.example.ai.OnnxIndicTransEngine
+import com.example.domain.ai.HybridTranslationCoordinator
+import com.example.domain.ai.TranslationResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -43,7 +46,13 @@ class BhashaSetuRepository(private val context: Context) {
     private val outboxDao = database.outboxDao()
     private val syncLogDao = database.syncLogDao()
     private val curriculumDao = database.curriculumDao()
+    private val translationDao = database.translationDao()
     val firebaseService = FirebaseService(context)
+
+    // New AI Architecture Initialization
+    private val modelManager = ModelManagerImpl(context)
+    private val translationEngine = OnnxIndicTransEngine(context, modelManager)
+    private val translationCoordinator = HybridTranslationCoordinator(translationDao, translationEngine)
 
     fun getUserProfile(): UserProfile = firebaseService.getCurrentUser()
 
@@ -633,7 +642,7 @@ class BhashaSetuRepository(private val context: Context) {
 
         val isStudent = (speakerRole == VoiceSpeakerRole.STUDENT)
 
-        val ragContext = OfflineVoiceTranslationEngine.retrieveRagGlossaryContext(hindiSpeechText, targetLanguage)
+        val ragContext = ""
         val systemPrompt = if (isStudent) {
             """
             You are a real-time classroom speech translation engine translating tribal student speech in ${targetLanguage.displayName} (${targetLanguage.nativeName}) into Hindi for the teacher.
@@ -716,35 +725,35 @@ class BhashaSetuRepository(private val context: Context) {
                     }
                 } else {
                     // SLA Timeout (>1200ms) or network offline: Instant fallback to offline engine (~1.2ms)
-                    val fallback = OfflineVoiceTranslationEngine.translate(hindiSpeechText, targetLanguage, speakerRole)
-                    targetTranslation = fallback.targetText
-                    scriptText = fallback.scriptText
-                    transliteration = fallback.transliteration
-                    transliterationDevanagari = fallback.transliterationDevanagari
-                    phoneticSyllables = fallback.phoneticSyllables
+                    val result = translationCoordinator.translate(hindiSpeechText, "hi", targetLanguage.name)
+                    targetTranslation = result.translatedText
+                    scriptText = result.translatedText
+                    transliteration = "Offline generated"
+                    transliterationDevanagari = result.translatedText
+                    phoneticSyllables = result.translatedText.split(" ")
                 }
             } catch (e: Exception) {
-                val fallback = OfflineVoiceTranslationEngine.translate(hindiSpeechText, targetLanguage, speakerRole)
-                targetTranslation = fallback.targetText
-                scriptText = fallback.scriptText
-                transliteration = fallback.transliteration
-                transliterationDevanagari = fallback.transliterationDevanagari
-                phoneticSyllables = fallback.phoneticSyllables
+                val result = translationCoordinator.translate(hindiSpeechText, "hi", targetLanguage.name)
+                targetTranslation = result.translatedText
+                scriptText = result.translatedText
+                transliteration = "Offline generated"
+                transliterationDevanagari = result.translatedText
+                phoneticSyllables = result.translatedText.split(" ")
             }
         } else {
-            val fallback = OfflineVoiceTranslationEngine.translate(hindiSpeechText, targetLanguage, speakerRole)
-            targetTranslation = fallback.targetText
-            scriptText = fallback.scriptText
-            transliteration = fallback.transliteration
-            transliterationDevanagari = fallback.transliterationDevanagari
-            phoneticSyllables = fallback.phoneticSyllables
+            val result = translationCoordinator.translate(hindiSpeechText, "hi", targetLanguage.name)
+            targetTranslation = result.translatedText
+            scriptText = result.translatedText
+            transliteration = "Offline generated"
+            transliterationDevanagari = result.translatedText
+            phoneticSyllables = result.translatedText.split(" ")
         }
 
         if (transliterationDevanagari.isBlank()) {
-            val fallback = OfflineVoiceTranslationEngine.translate(hindiSpeechText, targetLanguage, speakerRole)
-            transliterationDevanagari = fallback.transliterationDevanagari
+            val result = translationCoordinator.translate(hindiSpeechText, "hi", targetLanguage.name)
+            transliterationDevanagari = result.translatedText
             if (phoneticSyllables.isEmpty()) {
-                phoneticSyllables = fallback.phoneticSyllables
+                phoneticSyllables = result.translatedText.split(" ")
             }
         }
 

@@ -178,3 +178,15 @@ interface CurriculumDao {
     suspend fun deleteChunkById(id: String)
 }
 
+@Dao
+interface TranslationDao {
+    @Query("SELECT * FROM translation_entries WHERE sourceLanguage = :sourceLang AND targetLanguage = :targetLang AND sourceText = :sourceText LIMIT 1")
+    suspend fun getTranslation(sourceText: String, sourceLang: String, targetLang: String): TranslationEntry?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTranslation(entry: TranslationEntry)
+    
+    @Query("UPDATE translation_entries SET verified = 1 WHERE id = :id")
+    suspend fun markVerified(id: Int)
+}
+

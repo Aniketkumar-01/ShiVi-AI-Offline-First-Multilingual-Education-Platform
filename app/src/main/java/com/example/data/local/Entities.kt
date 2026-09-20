@@ -208,3 +208,26 @@ data class CurriculumContentEntity(
     val createdAt: Long = System.currentTimeMillis()
 )
 
+@Entity(
+    tableName = "translation_entries",
+    indices = [
+        Index("sourceLanguage", "targetLanguage", "sourceText")
+    ]
+)
+data class TranslationEntry(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val sourceText: String,
+    val sourceLanguage: String,
+    val targetText: String,
+    val targetLanguage: String,
+    val grade: String? = null,
+    val subject: String? = null,
+    val lesson: String? = null,
+    val category: String? = null,
+    val verified: Boolean = false,
+    val audioPath: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+    val updatedAt: Long = System.currentTimeMillis()
+)
+
+

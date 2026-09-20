@@ -15,9 +15,10 @@ import androidx.room.RoomDatabase
         GlossaryEntity::class,
         OutboxEntity::class,
         SyncLogEntity::class,
-        CurriculumContentEntity::class
+        CurriculumContentEntity::class,
+        TranslationEntry::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,6 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun outboxDao(): OutboxDao
     abstract fun syncLogDao(): SyncLogDao
     abstract fun curriculumDao(): CurriculumDao
+    abstract fun translationDao(): TranslationDao
 
     companion object {
         @Volatile

@@ -19,7 +19,7 @@
 ### Developed by **Team SHIVI@808** for **National Skill India Hackathon (SIH 2026)**
 *SHIVI = Smart Hybrid Intelligence & Virtual Integration*
 
-[Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) • [Product Requirements (PRD)](docs/PRD.md) • [Technical Architecture (TAD)](docs/TAD.md) • [Software Architecture (SAD)](docs/SAD.md) • [Functional Spec (FSD)](docs/FSD.md) • [Traceability Ledger (FTL)](docs/FTL.md)
+[Live Interactive Demo](https://Aniketkumar-01.github.io/ShiVi-AI-Offline-First-Multilingual-Education-Platform/) • [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) • [Product Requirements (PRD)](docs/PRD.md) • [Technical Architecture (TAD)](docs/TAD.md) • [Software Architecture (SAD)](docs/SAD.md) • [Functional Spec (FSD)](docs/FSD.md) • [Traceability Ledger (FTL)](docs/FTL.md)
 
 </div>
 
